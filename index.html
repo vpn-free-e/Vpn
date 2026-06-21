@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPN Configurator Pro | دریافت کانفیگ هوشمند</title>
+    <style>
+        /* ============================================================
+           ROOT VARIABLES & RESET
+           ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --vp-primary: #667eea;
+            --vp-secondary: #764ba2;
+            --vp-accent: #f093fb;
+            --vp-danger: #f5576c;
+            --vp-success: #22c55e;
+            --vp-warning: #fbbf24;
+            --vp-bg-dark: #0b081f;
+            --vp-card-bg: rgba(255, 255, 255, 0.06);
+            --vp-border: rgba(255, 255, 255, 0.08);
+            --vp-text-primary: #ffffff;
+            --vp-text-secondary: rgba(255, 255, 255, 0.7);
+            --vp-text-muted: rgba(255, 255, 255, 0.35);
+            --vp-radius: 20px;
+            --vp-radius-sm: 12px;
+            --vp-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+            --vp-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --vp-glow-primary: rgba(102, 126, 234, 0.4);
+            --vp-glow-secondary: rgba(118, 75, 162, 0.4);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Vazirmatn', 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 20% 50%, #1a1040 0%, var(--vp-bg-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+           PARALLAX BACKGROUND LAYERS - ENHANCED
+           ============================================================ */
+        .vp-bg-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .vp-bg-layer .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.35;
+            animation: glowDrift 25s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+
+        .vp-bg-layer .glow:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--vp-primary), transparent 70%);
+            top: -20%;
+            right: -15%;
+            animation-delay: 0s;
+            animation-duration: 30s;
+        }
+
+        .vp-bg-layer .glow:nth-child(2) {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--vp-secondary), transparent 70%);
+            bottom: -15%;
+            left: -15%;
+            animation-delay: -10s;
+            animation-duration: 28s;
+        }
+
+        .vp-bg-layer .glow:nth-child(3) {
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, var(--vp-accent), transparent 70%);
+            top: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            animation-delay: -18s;
+            animation-duration: 32s;
+            opacity: 0.2;
+        }
+
+        .vp-bg-layer .glow:nth-child(4) {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--vp-success), transparent 70%);
+            bottom: 10%;
+            right: 10%;
+            animation-delay: -5s;
+            animation-duration: 22s;
+            opacity: 0.15;
+        }
+
+        @keyframes glowDrift {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+            }
+            33% {
+                transform: translate(50px, -40px) scale(1.15) rotate(5deg);
+            }
+            66% {
+                transform: translate(-30px, 30px) scale(0.9) rotate(-3deg);
+            }
+            100% {
+                transform: translate(20px, -20px) scale(1.05) rotate(2deg);
+            }
+        }
+
+        /* ============================================================
+           PARTICLE SYSTEM - ENHANCED
+           ============================================================ */
+        .vp-particles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .vp-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.5), transparent 70%);
+            border-radius: 50%;
+            animation: particleFloat linear infinite;
+            will-change: transform;
+        }
+
+        .vp-particle:nth-child(odd) {
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.4), transparent 70%);
+        }
+
+        .vp-particle:nth-child(3n) {
+            background: radial-gradient(circle, rgba(240, 147, 251, 0.3), transparent 70%);
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.9;
+                transform: translateY(90vh) scale(0.5) rotate(60deg);
+            }
+            50% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================================
+           MAIN CONTAINER
+           ============================================================ */
+        .vp-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 560px;
+            margin: 20px 0;
+        }
+
+        /* ============================================================
+           GLASS CARD - ENHANCED
+           ============================================================ */
+        .vp-card {
+            background: var(--vp-card-bg);
+            backdrop-filter: blur(28px) saturate(1.4);
+            -webkit-backdrop-filter: blur(28px) saturate(1.4);
+            border: 1px solid var(--vp-border);
+            border-radius: var(--vp-radius);
+            padding: 38px 34px 34px;
+            text-align: center;
+            box-shadow: var(--vp-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            animation: cardEntry 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .vp-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 70% 20%, rgba(102, 126, 234, 0.1), transparent 60%);
+            pointer-events: none;
+        }
+
+        .vp-card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--vp-radius);
+            padding: 1px;
+            background: conic-gradient(from 0deg, transparent, var(--vp-primary), transparent, var(--vp-secondary), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.3;
+            animation: borderRotate 8s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .vp-card:hover::after {
+            opacity: 0.6;
+        }
+
+        @keyframes cardEntry {
+            0% {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ============================================================
+           LOGO - ENHANCED
+           ============================================================ */
+        .vp-logo {
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 22px;
+            background: linear-gradient(135deg, var(--vp-primary), var(--vp-secondary), var(--vp-accent));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 50px rgba(102, 126, 234, 0.4), 0 0 80px rgba(102, 126, 234, 0.15);
+            position: relative;
+            animation: logoPulse 3.5s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .vp-logo::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 28px;
+            background: linear-gradient(135deg, var(--vp-primary), var(--vp-secondary), var(--vp-accent));
+            filter: blur(20px);
+            opacity: 0.3;
+            z-index: -1;
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% {
+                opacity: 0.2;
+                transform: scale(0.95);
+            }
+            100% {
+                opacity: 0.5;
+                transform: scale(1.05);
+            }
+        }
+
+        .vp-logo:hover {
+            transform: scale(1.06) rotate(-3deg);
+        }
+
+        .vp-logo svg {
+            width: 44px;
+            height: 44px;
+            fill: white;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes logoPulse {
+            0%,
+            100% {
+                box-shadow: 0 12px 50px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 12px 70px rgba(102, 126, 234, 0.6), 0 0 100px rgba(102, 126, 234, 0.2);
+            }
+        }
+
+        /* ============================================================
+           TYPOGRAPHY - ENHANCED
+           ============================================================ */
+        .vp-title {
+            color: var(--vp-text-primary);
+            font-size: clamp(24px, 5vw, 30px);
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 30px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #ffffff 60%, var(--vp-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .vp-subtitle {
+            color: var(--vp-text-secondary);
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 28px;
+            line-height: 1.7;
+            letter-spacing: 0.3px;
+        }
+
+        /* ============================================================
+           STATUS BADGE - ENHANCED
+           ============================================================ */
+        .vp-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: #4ade80;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 26px;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .vp-status::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 50px;
+            padding: 1px;
+            background: linear-gradient(90deg, transparent, #4ade80, transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0.3;
+        }
+
+        .vp-status:hover {
+            background: rgba(34, 197, 94, 0.18);
+            transform: scale(1.02);
+        }
+
+        .vp-status-dot {
+            width: 9px;
+            height: 9px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: dotBlink 2s ease-in-out infinite;
+            box-shadow: 0 0 16px rgba(34, 197, 94, 0.5);
+        }
+
+        @keyframes dotBlink {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+        }
+
+        /* ============================================================
+           FEATURES - ENHANCED
+           ============================================================ */
+        .vp-features {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .vp-feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 13px 16px;
+            border-radius: var(--vp-radius-sm);
+            color: var(--vp-text-secondary);
+            font-size: 14px;
+            font-weight: 400;
+            transition: all var(--vp-transition);
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vp-feature::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.05), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .vp-feature:hover::before {
+            transform: translateX(100%);
+        }
+
+        .vp-feature:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateX(-4px) scale(1.01);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .vp-feature-icon {
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            background: linear-gradient(135deg, var(--vp-primary), var(--vp-secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .vp-feature:hover .vp-feature-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .vp-feature-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        /* ============================================================
+           BUTTONS - ENHANCED
+           ============================================================ */
+        .vp-btn-primary {
+            width: 100%;
+            padding: 17px 24px;
+            background: linear-gradient(135deg, var(--vp-primary), var(--vp-secondary), var(--vp-accent));
+            background-size: 200% 200%;
+            color: white;
+            border: none;
+            border-radius: var(--vp-radius-sm);
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 35px rgba(102, 126, 234, 0.4);
+            transition: all var(--vp-transition);
+            position: relative;
+            overflow: hidden;
+            animation: gradientShift 4s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .vp-btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .vp-btn-primary:hover::after {
+            transform: translateX(100%);
+        }
+
+        .vp-btn-primary:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 12px 50px rgba(102, 126, 234, 0.5);
+        }
+
+        .vp-btn-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .vp-btn-signup {
+            width: 100%;
+            padding: 17px 24px;
+            background: linear-gradient(135deg, var(--vp-accent), var(--vp-danger), #ff6b6b);
+            background-size: 200% 200%;
+            color: white;
+            border: none;
+            border-radius: var(--vp-radius-sm);
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 35px rgba(245, 87, 108, 0.4);
+            transition: all var(--vp-transition);
+            text-decoration: none;
+            display: inline-block;
+            animation: gradientShift 4s ease-in-out infinite;
+        }
+
+        .vp-btn-signup:hover {
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 12px 50px rgba(245, 87, 108, 0.5);
+        }
+
+        .vp-btn-back {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--vp-text-secondary);
+            padding: 8px 20px;
+            border-radius: var(--vp-radius-sm);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--vp-transition);
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vp-btn-back::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.05);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+
+        .vp-btn-back:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .vp-btn-back:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+
+        /* ============================================================
+           STEPS - ENHANCED
+           ============================================================ */
+        .vp-steps {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .vp-steps.active {
+            display: flex;
+        }
+
+        .vp-step {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--vp-text-muted);
+            font-size: 13px;
+            font-weight: 700;
+            transition: all var(--vp-transition);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .vp-step.active {
+            background: linear-gradient(135deg, var(--vp-primary), var(--vp-secondary));
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+            transform: scale(1.1);
+        }
+
+        .vp-step.done {
+            background: var(--vp-success);
+            border-color: var(--vp-success);
+            color: white;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .vp-step.done::after {
+            content: '✓';
+            font-size: 14px;
+        }
+
+        .vp-step.done span {
+            display: none;
+        }
+
+        .vp-step-line {
+            width: 30px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background var(--vp-transition);
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .vp-step-line.done {
+            background: linear-gradient(90deg, var(--vp-success), var(--vp-primary));
+        }
+
+        .vp-step-line.done::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, var(--vp-success), var(--vp-primary));
+            animation: linePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes linePulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* ============================================================
+           SELECTION SECTIONS - ENHANCED
+           ============================================================ */
+        .vp-section {
+            display: none;
+            animation: fadeSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .vp-section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(15px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .vp-section-title {
+            color: white;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .vp-section-title svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--vp-warning);
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* ============================================================
+           OPTIONS GRID - ENHANCED
+           ============================================================ */
+        .vp-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .vp-option {
+            padding: 15px 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--vp-radius-sm);
+            color: var(--vp-text-secondary);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--vp-transition);
+            text-align: center;
+            line-height: 1.4;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vp-option::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .vp-option:hover::before {
+            opacity: 1;
+        }
+
+        .vp-option:hover {
+            background: rgba(102, 126, 234, 0.12);
+            border-color: var(--vp-primary);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .vp-option.selected {
+            background: linear-gradient(135deg, var(--vp-primary), var(--vp-secondary));
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px) scale(1.02);
+        }
+
+        .vp-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--vp-success);
+            color: white;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+        }
+
+        .vp-option .vp-price {
+            display: block;
+            font-size: 11px;
+            color: var(--vp-text-muted);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        .vp-option.selected .vp-price {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ============================================================
+           SUMMARY - ENHANCED
+           ============================================================ */
+        .vp-summary {
+            display: none;
+            background: rgba(102, 126, 234, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: var(--vp-radius-sm);
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            animation: fadeSlide 0.4s ease forwards;
+            backdrop-filter: blur(4px);
+        }
+
+        .vp-summary.active {
+            display: block;
+        }
+
+        .vp-summary-title {
+            color: var(--vp-primary);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vp-summary-title::before {
+            content: '📋';
+            font-size: 18px;
+        }
+
+        .vp-summary-row {
+            display: flex;
+            justify-content: space-between;
+            color: var(--vp-text-secondary);
+            font-size: 13px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .vp-summary-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            padding-left: 8px;
+            padding-right: 8px;
+            border-radius: 4px;
+        }
+
+        .vp-summary-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            color: white;
+            font-size: 15px;
+            padding-top: 10px;
+            margin-top: 4px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* ============================================================
+           ALERT - ENHANCED
+           ============================================================ */
+        .vp-alert {
+            display: none;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            padding: 14px 18px;
+            border-radius: var(--vp-radius-sm);
+            font-size: 14px;
+            margin-bottom: 16px;
+            animation: alertShake 0.5s ease forwards;
+            backdrop-filter: blur(4px);
+        }
+
+        .vp-alert.active {
+            display: block;
+        }
+
+        @keyframes alertShake {
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+            15% {
+                transform: translateX(-10px);
+            }
+            30% {
+                transform: translateX(10px);
+            }
+            45% {
+                transform: translateX(-6px);
+            }
+            60% {
+                transform: translateX(6px);
+            }
+            80% {
+                transform: translateX(-3px);
+            }
+        }
+
+        /* ============================================================
+           SIGNUP SECTION - ENHANCED
+           ============================================================ */
+        .vp-signup-section {
+            display: none;
+            animation: fadeSlide 0.5s ease forwards;
+        }
+
+        .vp-signup-section.active {
+            display: block;
+        }
+
+        .vp-urgency {
+            color: var(--vp-warning);
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(251, 191, 36, 0.08);
+            padding: 10px 16px;
+            border-radius: var(--vp-radius-sm);
+            border: 1px solid rgba(251, 191, 36, 0.15);
+        }
+
+        .vp-urgency svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--vp-warning);
+            animation: firePulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes firePulse {
+            0%,
+            100% {
+                transform: scale(1) rotate(-5deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg);
+            }
+        }
+
+        /* ============================================================
+           FOOTER - ENHANCED
+           ============================================================ */
+        .vp-footer {
+            margin-top: 20px;
+            color: var(--vp-text-muted);
+            font-size: 12px;
+            text-align: center;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+
+        .vp-footer:hover {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+
+        /* ============================================================
+           RESPONSIVE - ENHANCED
+           ============================================================ */
+        @media (max-width: 480px) {
+            .vp-card {
+                padding: 24px 18px 20px;
+                border-radius: 16px;
+            }
+
+            .vp-title {
+                font-size: 21px;
+            }
+
+            .vp-options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .vp-option {
+                padding: 12px 8px;
+                font-size: 13px;
+            }
+
+            .vp-logo {
+                width: 68px;
+                height: 68px;
+                border-radius: 18px;
+            }
+
+            .vp-logo svg {
+                width: 34px;
+                height: 34px;
+            }
+
+            .vp-step-line {
+                width: 18px;
+            }
+
+            .vp-step {
+                width: 30px;
+                height: 30px;
+                font-size: 11px;
+            }
+
+            .vp-card::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .vp-options {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .vp-option {
+                font-size: 12px;
+                padding: 10px 6px;
+            }
+
+            .vp-card {
+                padding: 18px 14px 16px;
+            }
+        }
+
+        /* ============================================================
+           UTILITY - ENHANCED
+           ============================================================ */
+        .vp-hidden {
+            display: none !important;
+        }
+
+        .vp-text-center {
+            text-align: center;
+        }
+
+        .vp-mt-8 {
+            margin-top: 8px;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--vp-primary), var(--vp-secondary));
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--vp-secondary), var(--vp-primary));
+        }
+
+        /* Selection color */
+        ::selection {
+            background: rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+    BACKGROUND EFFECTS - ENHANCED
+    ============================================================ -->
+    <div class="vp-bg-layer" aria-hidden="true">
+        <div class="glow"></div>
+        <div class="glow"></div>
+        <div class="glow"></div>
+        <div class="glow"></div>
+    </div>
+
+    <div class="vp-particles" id="vpParticles" aria-hidden="true"></div>
+
+    <!-- ============================================================
+    MAIN CONTAINER
+    ============================================================ -->
+    <div class="vp-container">
+
+        <div class="vp-card" role="main">
+
+            <!-- ============================================================
+            LOGO
+            ============================================================ -->
+            <div class="vp-logo" aria-label="VPN Configurator Pro">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                </svg>
+            </div>
+
+            <!-- ============================================================
+            HEADER
+            ============================================================ -->
+            <h1 class="vp-title">کانفیگ VPN پرسرعت</h1>
+            <p class="vp-subtitle">دسترسی امن و سریع به اینترنت بدون محدودیت</p>
+
+            <div class="vp-status">
+                <span class="vp-status-dot"></span>
+                <span>سرورها فعال و آماده</span>
+            </div>
+
+            <!-- ============================================================
+            STEPS
+            ============================================================ -->
+            <div class="vp-steps" id="vpSteps" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="3">
+                <div class="vp-step active" id="vpStep1"><span>۱</span></div>
+                <div class="vp-step-line" id="vpLine1"></div>
+                <div class="vp-step" id="vpStep2"><span>۲</span></div>
+                <div class="vp-step-line" id="vpLine2"></div>
+                <div class="vp-step" id="vpStep3"><span>۳</span></div>
+            </div>
+
+            <!-- ============================================================
+            MAIN VIEW
+            ============================================================ -->
+            <div id="vpMainView">
+                <div class="vp-features">
+                    <div class="vp-feature">
+                        <div class="vp-feature-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        </div>
+                        <span>سرورهای اختصاصی با پینگ پایین</span>
+                    </div>
+                    <div class="vp-feature">
+                        <div class="vp-feature-icon">
+                            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                        </div>
+                        <span>رمزنگاری سرتاسری اطلاعات</span>
+                    </div>
+                    <div class="vp-feature">
+                        <div class="vp-feature-icon">
+                            <svg viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9z"/></svg>
+                        </div>
+                        <span>بدون قطعی با پایداری ۹۹.۹٪</span>
+                    </div>
+                </div>
+
+                <button class="vp-btn-primary" id="vpStartBtn" type="button">
+                    دریافت کانفیگ
+                </button>
+            </div>
+
+            <!-- ============================================================
+            TRAFFIC SELECTION
+            ============================================================ -->
+            <div class="vp-section" id="vpTrafficSection">
+                <button class="vp-btn-back" type="button" data-action="back-to-main">← بازگشت</button>
+
+                <div class="vp-section-title">
+                    <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+                    حجم ترافیک را انتخاب کنید
+                </div>
+
+                <div class="vp-options" role="radiogroup" aria-label="انتخاب حجم ترافیک">
+                    <button class="vp-option" role="radio" data-traffic="1" data-name="۱ گیگابایت" data-price="0">
+                        ۱ گیگابایت
+                        <span class="vp-price">رایگان</span>
+                    </button>
+                    <button class="vp-option" role="radio" data-traffic="2" data-name="۲ گیگابایت" data-price="0">
+                        ۲ گیگابایت
+                        <span class="vp-price">رایگان</span>
+                    </button>
+                    <button class="vp-option" role="radio" data-traffic="3" data-name="۳ گیگابایت" data-price="0">
+                        ۳ گیگابایت
+                        <span class="vp-price">رایگان</span>
+                    </button>
+                    <button class="vp-option" role="radio" data-traffic="5" data-name="۵ گیگابایت" data-price="0">
+                        ۵ گیگابایت
+                        <span class="vp-price">رایگان</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            DURATION SELECTION
+            ============================================================ -->
+            <div class="vp-section" id="vpDurationSection">
+                <button class="vp-btn-back" type="button" data-action="back-to-traffic">← بازگشت</button>
+
+                <div class="vp-section-title">
+                    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    مدت زمان را انتخاب کنید
+                </div>
+
+                <div class="vp-options" role="radiogroup" aria-label="انتخاب مدت زمان">
+                    <button class="vp-option" role="radio" data-duration="1" data-name="۱ روزه" data-discount="0">
+                        ۱ روزه
+                        <span class="vp-price">رایگان</span>
+                    </button>
+                    <button class="vp-option" role="radio" data-duration="6" data-name="۶ روزه" data-discount="0">
+                        ۶ روزه
+                        <span class="vp-price">رایگان</span>
+                    </button>
+                    <button class="vp-option" role="radio" data-duration="30" data-name="۳۰ روزه" data-discount="0">
+                        ۳۰ روزه
+                        <span class="vp-price">رایگان</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            LOCATION SELECTION
+            ============================================================ -->
+            <div class="vp-section" id="vpLocationSection">
+                <button class="vp-btn-back" type="button" data-action="back-to-duration">← بازگشت</button>
+
+                <div class="vp-section-title">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                    موقعیت سرور را انتخاب کنید
+                </div>
+
+                <div class="vp-options" role="radiogroup" aria-label="انتخاب موقعیت سرور">
+                    <button class="vp-option" role="radio" data-location="germany" data-name="آلمان 🇩🇪" data-ping="۸۵ms">
+                        آلمان 🇩🇪
+                        <span class="vp-price">پینگ: ۸۵ms</span>
+                    </button>
+                    <button class="vp-option" role="radio" data-location="netherlands" data-name="هلند 🇳🇱" data-ping="۹۲ms">
+                        هلند 🇳🇱
+                        <span class="vp-price">پینگ: ۹۲ms</span>
+                    </button>
+                    <button class="vp-option" role="radio" data-location="turkey" data-name="ترکیه 🇹🇷" data-ping="۴۵ms">
+                        ترکیه 🇹🇷
+                        <span class="vp-price">پینگ: ۴۵ms</span>
+                    </button>
+                    <button class="vp-option" role="radio" data-location="uae" data-name="امارات 🇦🇪" data-ping="۱۲۰ms">
+                        امارات 🇦🇪
+                        <span class="vp-price">پینگ: ۱۲۰ms</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            SUMMARY
+            ============================================================ -->
+            <div class="vp-summary" id="vpSummary">
+                <div class="vp-summary-title">خلاصه سفارش شما</div>
+                <div class="vp-summary-row">
+                    <span>حجم ترافیک:</span>
+                    <span id="vpSummaryTraffic">-</span>
+                </div>
+                <div class="vp-summary-row">
+                    <span>مدت زمان:</span>
+                    <span id="vpSummaryDuration">-</span>
+                </div>
+                <div class="vp-summary-row">
+                    <span>موقعیت سرور:</span>
+                    <span id="vpSummaryLocation">-</span>
+                </div>
+                <div class="vp-summary-row">
+                    <span>قیمت کل:</span>
+                    <span id="vpSummaryPrice">-</span>
+                </div>
+            </div>
+
+            <!-- ============================================================
+            ALERT
+            ============================================================ -->
+            <div class="vp-alert" id="vpAlert">
+                ❌ شما هنوز ثبت‌نام نکرده‌اید! برای دریافت کانفیگ باید ابتدا ثبت‌نام کنید.
+            </div>
+
+            <!-- ============================================================
+            SIGNUP SECTION
+            ============================================================ -->
+            <div class="vp-signup-section" id="vpSignupSection">
+                <div class="vp-urgency">
+                    <svg viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></svg>
+                    فرصت ثبت‌نام رایگان فقط امروز!
+                </div>
+                <a href="https://milli.gold/app/sign-up?referralCode=milli-qdz5k" class="vp-btn-signup" id="vpSignupLink">
+                    ثبت‌نام کنید
+                </a>
+            </div>
+
+        </div>
+
+        <p class="vp-footer">© ۲۰۲۶ - تمامی حقوق محفوظ است</p>
+    </div>
+
+    <!-- ============================================================
+    JAVASCRIPT — MODULAR, OBJECT-ORIENTED, WITH ERROR HANDLING & LOGGING
+    ============================================================ -->
+    <script>
+        /**
+         * ============================================================
+         * VPN Configurator Pro — Main Application
+         * Version: 5.0.0
+         * 
+         * A fully modular, object-oriented single-page application
+         * for configuring and requesting VPN configurations.
+         * 
+         * Features:
+         * - Step-by-step wizard (Traffic → Duration → Location)
+         * - State management with validation
+         * - Error handling with user feedback
+         * - Console logging for debugging
+         * - Accessible (ARIA roles, keyboard navigation)
+         * - Responsive & modern UI with glassmorphism
+         * - Particle background system
+         * - Enhanced animations and visual effects
+         * ============================================================
+         */
+
+        (function() {
+            'use strict';
+
+            // ============================================================
+            // 1. LOGGER — Simple console logger with levels
+            // ============================================================
+            const Logger = {
+                levels: {
+                    DEBUG: 0,
+                    INFO: 1,
+                    WARN: 2,
+                    ERROR: 3,
+                    NONE: 4
+                },
+                currentLevel: 0,
+
+                debug(message, data) {
+                    if (this.currentLevel <= this.levels.DEBUG) {
+                        console.debug(`%c[DEBUG] ${message}`, 'color: #888;', data || '');
+                    }
+                },
+
+                info(message, data) {
+                    if (this.currentLevel <= this.levels.INFO) {
+                        console.info(`%c[INFO] ${message}`, 'color: #667eea;', data || '');
+                    }
+                },
+
+                warn(message, data) {
+                    if (this.currentLevel <= this.levels.WARN) {
+                        console.warn(`%c[WARN] ${message}`, 'color: #fbbf24;', data || '');
+                    }
+                },
+
+                error(message, data) {
+                    if (this.currentLevel <= this.levels.ERROR) {
+                        console.error(`%c[ERROR] ${message}`, 'color: #f5576c;', data || '');
+                    }
+                },
+
+                setLevel(level) {
+                    const upper = level.toUpperCase();
+                    if (this.levels[upper] !== undefined) {
+                        this.currentLevel = this.levels[upper];
+                        this.info(`Log level set to ${upper}`);
+                    } else {
+                        this.warn(`Unknown log level: ${level}, keeping current`);
+                    }
+                }
+            };
+
+            // ============================================================
+            // 2. PARTICLE SYSTEM — Enhanced background animation
+            // ============================================================
+            const ParticleSystem = {
+                init(containerSelector, count = 60) {
+                    const container = typeof containerSelector === 'string' ?
+                        document.querySelector(containerSelector) :
+                        containerSelector;
+
+                    if (!container) {
+                        Logger.error('Particle container not found', containerSelector);
+                        return;
+                    }
+
+                    try {
+                        const fragment = document.createDocumentFragment();
+                        for (let i = 0; i < count; i++) {
+                            const particle = document.createElement('div');
+                            particle.className = 'vp-particle';
+                            const size = Math.random() * 5 + 2;
+                            particle.style.width = size + 'px';
+                            particle.style.height = size + 'px';
+                            particle.style.left = Math.random() * 100 + '%';
+                            particle.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                            particle.style.animationDelay = (Math.random() * 25) + 's';
+                            particle.style.opacity = Math.random() * 0.4 + 0.15;
+                            fragment.appendChild(particle);
+                        }
+                        container.appendChild(fragment);
+                        Logger.debug('Particle system initialized', { count });
+                    } catch (err) {
+                        Logger.error('Failed to initialize particles', err);
+                    }
+                }
+            };
+
+            // ============================================================
+            // 3. VPN CONFIGURATOR — Main Application Class
+            // ============================================================
+            class VPNConfigurator {
+                constructor(options = {}) {
+                    this.signupUrl = options.signupUrl || 'https://milli.gold/app/sign-up?referralCode=milli-qdz5k';
+
+                    this.state = {
+                        traffic: null,
+                        duration: null,
+                        location: null,
+                        currentStep: 1,
+                        isComplete: false
+                    };
+
+                    this.dom = {
+                        mainView: document.getElementById('vpMainView'),
+                        steps: document.getElementById('vpSteps'),
+                        step1: document.getElementById('vpStep1'),
+                        step2: document.getElementById('vpStep2'),
+                        step3: document.getElementById('vpStep3'),
+                        line1: document.getElementById('vpLine1'),
+                        line2: document.getElementById('vpLine2'),
+                        trafficSection: document.getElementById('vpTrafficSection'),
+                        durationSection: document.getElementById('vpDurationSection'),
+                        locationSection: document.getElementById('vpLocationSection'),
+                        summary: document.getElementById('vpSummary'),
+                        summaryTraffic: document.getElementById('vpSummaryTraffic'),
+                        summaryDuration: document.getElementById('vpSummaryDuration'),
+                        summaryLocation: document.getElementById('vpSummaryLocation'),
+                        summaryPrice: document.getElementById('vpSummaryPrice'),
+                        alert: document.getElementById('vpAlert'),
+                        signupSection: document.getElementById('vpSignupSection'),
+                        signupLink: document.getElementById('vpSignupLink'),
+                        startBtn: document.getElementById('vpStartBtn')
+                    };
+
+                    this._bindEvents();
+                    Logger.info('VPN Configurator initialized', { version: '5.0.0', signupUrl: this.signupUrl });
+                }
+
+                // ============================================================
+                // 4. EVENT BINDING
+                // ============================================================
+                _bindEvents() {
+                    if (this.dom.startBtn) {
+                        this.dom.startBtn.addEventListener('click', () => this.startWizard());
+                    }
+
+                    document.querySelectorAll('[data-action="back-to-main"]').forEach(btn => {
+                        btn.addEventListener('click', () => this.goToMain());
+                    });
+                    document.querySelectorAll('[data-action="back-to-traffic"]').forEach(btn => {
+                        btn.addEventListener('click', () => this.goToTraffic());
+                    });
+                    document.querySelectorAll('[data-action="back-to-duration"]').forEach(btn => {
+                        btn.addEventListener('click', () => this.goToDuration());
+                    });
+
+                    document.querySelectorAll('#vpTrafficSection .vp-option[data-traffic]').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const el = e.currentTarget;
+                            this.selectTraffic(
+                                parseInt(el.dataset.traffic),
+                                el.dataset.name,
+                                parseInt(el.dataset.price)
+                            );
+                        });
+                    });
+
+                    document.querySelectorAll('#vpDurationSection .vp-option[data-duration]').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const el = e.currentTarget;
+                            this.selectDuration(
+                                parseInt(el.dataset.duration),
+                                el.dataset.name,
+                                parseInt(el.dataset.discount)
+                            );
+                        });
+                    });
+
+                    document.querySelectorAll('#vpLocationSection .vp-option[data-location]').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const el = e.currentTarget;
+                            this.selectLocation(
+                                el.dataset.location,
+                                el.dataset.name,
+                                el.dataset.ping
+                            );
+                        });
+                    });
+
+                    if (this.dom.signupLink) {
+                        this.dom.signupLink.href = this.signupUrl;
+                    }
+
+                    // Keyboard navigation support
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape') {
+                            if (this.dom.trafficSection.classList.contains('active') ||
+                                this.dom.durationSection.classList.contains('active') ||
+                                this.dom.locationSection.classList.contains('active')) {
+                                this.goToMain();
+                            }
+                        }
+                    });
+
+                    Logger.debug('Events bound');
+                }
+
+                // ============================================================
+                // 5. WIZARD NAVIGATION
+                // ============================================================
+
+                startWizard() {
+                    try {
+                        this.dom.mainView.style.display = 'none';
+                        this.dom.steps.classList.add('active');
+                        this._showSection('vpTrafficSection');
+                        this._updateSteps(1);
+                        this.state.currentStep = 1;
+                        Logger.info('Wizard started');
+                    } catch (err) {
+                        Logger.error('Failed to start wizard', err);
+                        this._showAlert('خطا در شروع فرآیند، لطفاً دوباره تلاش کنید.');
+                    }
+                }
+
+                goToMain() {
+                    try {
+                        this._hideAllSections();
+                        this.dom.mainView.style.display = 'block';
+                        this.dom.steps.classList.remove('active');
+                        this._resetSelection();
+                        Logger.debug('Returned to main view');
+                    } catch (err) {
+                        Logger.error('Failed to return to main', err);
+                    }
+                }
+
+                goToTraffic() {
+                    try {
+                        this._hideAllSections();
+                        this._showSection('vpTrafficSection');
+                        this._updateSteps(1);
+                        this.state.currentStep = 1;
+                        Logger.debug('Returned to traffic selection');
+                    } catch (err) {
+                        Logger.error('Failed to return to traffic', err);
+                    }
+                }
+
+                goToDuration() {
+                    try {
+                        this._hideAllSections();
+                        this._showSection('vpDurationSection');
+                        this._updateSteps(2);
+                        this.state.currentStep = 2;
+                        this.dom.summary.classList.remove('active');
+                        this.dom.alert.classList.remove('active');
+                        this.dom.signupSection.classList.remove('active');
+                        Logger.debug('Returned to duration selection');
+                    } catch (err) {
+                        Logger.error('Failed to return to duration', err);
+                    }
+                }
+
+                // ============================================================
+                // 6. SELECTION HANDLERS
+                // ============================================================
+
+                selectTraffic(id, name, price) {
+                    try {
+                        this.state.traffic = { id, name, price };
+                        this._markSelected('#vpTrafficSection .vp-option[data-traffic]', id);
+                        this.state.currentStep = 2;
+
+                        setTimeout(() => {
+                            this._hideAllSections();
+                            this._showSection('vpDurationSection');
+                            this._updateSteps(2);
+                        }, 350);
+
+                        Logger.info('Traffic selected', { id, name, price });
+                    } catch (err) {
+                        Logger.error('Error selecting traffic', err);
+                        this._showAlert('خطا در انتخاب حجم ترافیک');
+                    }
+                }
+
+                selectDuration(id, name, discount) {
+                    try {
+                        this.state.duration = { id, name, discount };
+                        this._markSelected('#vpDurationSection .vp-option[data-duration]', id);
+                        this.state.currentStep = 3;
+
+                        setTimeout(() => {
+                            this._hideAllSections();
+                            this._showSection('vpLocationSection');
+                            this._updateSteps(3);
+                        }, 350);
+
+                        Logger.info('Duration selected', { id, name, discount });
+                    } catch (err) {
+                        Logger.error('Error selecting duration', err);
+                        this._showAlert('خطا در انتخاب مدت زمان');
+                    }
+                }
+
+                selectLocation(id, name, ping) {
+                    try {
+                        this.state.location = { id, name, ping };
+                        this._markSelected('#vpLocationSection .vp-option[data-location]', id);
+
+                        let finalPrice = this.state.traffic ? this.state.traffic.price : 0;
+                        if (this.state.duration && this.state.duration.discount > 0) {
+                            finalPrice = finalPrice - (finalPrice * this.state.duration.discount / 100);
+                        }
+
+                        this.dom.summaryTraffic.textContent = this.state.traffic ? this.state.traffic.name : '-';
+                        this.dom.summaryDuration.textContent = this.state.duration ?
+                            this.state.duration.name + (this.state.duration.discount > 0 ?
+                                ` (${this.state.duration.discount}٪ تخفیف)` : '') :
+                            '-';
+                        this.dom.summaryLocation.textContent = this.state.location ? this.state.location.name : '-';
+                        this.dom.summaryPrice.textContent = finalPrice.toLocaleString('fa-IR') + ' تومان';
+
+                        this.dom.summary.classList.add('active');
+
+                        setTimeout(() => {
+                            this._showSignupPrompt();
+                        }, 1200);
+
+                        Logger.info('Location selected', { id, name, ping, finalPrice });
+                        this.state.isComplete = true;
+                    } catch (err) {
+                        Logger.error('Error selecting location', err);
+                        this._showAlert('خطا در انتخاب موقعیت سرور');
+                    }
+                }
+
+                // ============================================================
+                // 7. UI HELPERS
+                // ============================================================
+
+                _showSection(id) {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.classList.add('active');
+                        Logger.debug(`Section shown: ${id}`);
+                    } else {
+                        Logger.warn(`Section not found: ${id}`);
+                    }
+                }
+
+                _hideAllSections() {
+                    document.querySelectorAll('.vp-section').forEach(el => {
+                        el.classList.remove('active');
+                    });
+                }
+
+                _updateSteps(step) {
+                    const steps = [this.dom.step1, this.dom.step2, this.dom.step3];
+                    const lines = [this.dom.line1, this.dom.line2];
+
+                    steps.forEach(s => { s.className = 'vp-step'; });
+                    lines.forEach(l => { l.className = 'vp-step-line'; });
+
+                    for (let i = 0; i < 3; i++) {
+                        if (i < step - 1) {
+                            steps[i].classList.add('done');
+                        } else if (i === step - 1) {
+                            steps[i].classList.add('active');
+                        }
+                    }
+
+                    if (step >= 2) {
+                        this.dom.line1.classList.add('done');
+                    }
+                    if (step >= 3) {
+                        this.dom.line2.classList.add('done');
+                        this.dom.step2.classList.remove('active');
+                        this.dom.step2.classList.add('done');
+                    }
+
+                    this.dom.steps.setAttribute('aria-valuenow', step);
+                    Logger.debug(`Steps updated to ${step}`);
+                }
+
+                _markSelected(selector, value) {
+                    document.querySelectorAll(selector).forEach(el => {
+                        el.classList.remove('selected');
+                        const elValue = el.dataset.traffic || el.dataset.duration || el.dataset.location;
+                        if (elValue == value) {
+                            el.classList.add('selected');
+                        }
+                    });
+                }
+
+                _showSignupPrompt() {
+                    this.dom.alert.classList.add('active');
+                    this.dom.signupSection.classList.add('active');
+                    setTimeout(() => {
+                        this.dom.signupSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 200);
+                    Logger.info('Signup prompt shown');
+                }
+
+                _showAlert(message) {
+                    this.dom.alert.textContent = '⚠️ ' + message;
+                    this.dom.alert.classList.add('active');
+                    setTimeout(() => {
+                        this.dom.alert.classList.remove('active');
+                    }, 5000);
+                    Logger.warn('Alert shown', { message });
+                }
+
+                _resetSelection() {
+                    this.state.traffic = null;
+                    this.state.duration = null;
+                    this.state.location = null;
+                    this.state.currentStep = 1;
+                    this.state.isComplete = false;
+
+                    document.querySelectorAll('.vp-option').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    this.dom.summary.classList.remove('active');
+                    this.dom.alert.classList.remove('active');
+                    this.dom.signupSection.classList.remove('active');
+
+                    Logger.debug('Selection reset');
+                }
+
+                // ============================================================
+                // 8. PUBLIC API
+                // ============================================================
+
+                getState() {
+                    return { ...this.state };
+                }
+
+                isComplete() {
+                    return this.state.isComplete &&
+                        this.state.traffic !== null &&
+                        this.state.duration !== null &&
+                        this.state.location !== null;
+                }
+            }
+
+            // ============================================================
+            // 9. INITIALIZATION
+            // ============================================================
+
+            document.addEventListener('DOMContentLoaded', function() {
+                try {
+                    Logger.setLevel('INFO');
+
+                    ParticleSystem.init('#vpParticles', 60);
+
+                    const app = new VPNConfigurator({
+                        signupUrl: 'https://milli.gold/app/sign-up?referralCode=milli-qdz5k'
+                    });
+
+                    window.__vpApp = app;
+
+                    Logger.info('VPN Configurator Pro loaded successfully');
+                } catch (err) {
+                    Logger.error('Fatal error during initialization', err);
+                    const container = document.querySelector('.vp-container');
+                    if (container) {
+                        const errorMsg = document.createElement('div');
+                        errorMsg.style.cssText = `
+                                background: rgba(239,68,68,0.15);
+                                color: #fca5a5;
+                                padding: 20px;
+                                border-radius: 12px;
+                                text-align: center;
+                                margin-top: 20px;
+                                font-family: 'Vazirmatn', sans-serif;
+                                backdrop-filter: blur(10px);
+                                border: 1px solid rgba(239,68,68,0.2);
+                            `;
+                        errorMsg.textContent = '⚠️ خطا در بارگذاری برنامه. لطفاً صفحه را مجدداً بارگذاری کنید.';
+                        container.prepend(errorMsg);
+                    }
+                }
+            });
+
+        })(); // end IIFE
+    </script>
+
+</body>
+</html>
